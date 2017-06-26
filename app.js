@@ -3,6 +3,7 @@ const mustache = require('mustache-express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const users = require('./users.js');
+const auth = require('./auth.js');
 const app = express();
 
 app.use(bodyParser.json());
@@ -18,20 +19,6 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }))
-
-function auth(userCheck, passCheck) {
-  console.log('attempting auth');
-  var authenticatedUser = users.user.find(function (user) {
-    if (userCheck === user.username && passCheck === user.password) {
-      console.log('User & Password Authenticated');
-      return user;
-    }
-  });
-  if (authenticatedUser) {
-    return true;
-  }
-  return false;
-}
 
 app.use('/', function(req, res, next) {
   // check if the user is logged in, if not, redirect to /login
@@ -62,10 +49,7 @@ app.get('/login', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
-  console.log('checking auth');
-  console.log(req.body.username, req.body.pass);
-  req.session.loggedIn = auth(req.body.username, req.body.pass);
-  console.log('auth', req.session.loggedIn);
+  req.session.loggedIn = auth.checkUser(req.body.username, req.body.pass);
   if (req.session.loggedIn) {
     req.session.userInfo['username'] = req.body.username;
     req.session.userInfo['clicker'] = 0;
