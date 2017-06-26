@@ -8,6 +8,12 @@
     <h1>Main Page</h1>
     <h2> Hi {{username}}! You are logged in.</h2>
 
+
+
+    <form class="" action="/plusone" method="post">
+      <label for="the-button">This Button has been clicked {{clicker}} times!</label>
+      <button id="the-button" type="submit" name="add-one">+1</button>
+    </form>
     <form class="" action="/logout" method="post">
       <button type="submit" name="button">Logout</button>
     </form>

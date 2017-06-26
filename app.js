@@ -38,10 +38,12 @@ app.use('/', function(req, res, next) {
   // if logged in, then allow to proceed
   var loggedIn = req.session.loggedIn;
   var userInfo = req.session.userInfo;
+  var clicker = req.session.clicker;
 
   if (!loggedIn) {
     loggedIn = req.session.loggedIn = false;
     userInfo = req.session.userInfo = {};
+    clicker = req.session.clicker = {};
   }
 
   next();
@@ -66,6 +68,7 @@ app.post('/login', function (req, res) {
   console.log('auth', req.session.loggedIn);
   if (req.session.loggedIn) {
     req.session.userInfo['username'] = req.body.username;
+    req.session.userInfo['clicker'] = 0;
     res.redirect('/');
   } else {
     res.redirect('/login');
@@ -75,9 +78,18 @@ app.post('/login', function (req, res) {
 app.post('/logout', function (req,res) {
   console.log('logging out');
   req.session.destroy(function(err) {
-    console.log('error destorying session');
+    if (err) {
+      console.log(err);
+    }
+    console.log('destroying session');
     res.redirect('/login');
   });
+});
+
+app.post('/plusone', function (req, res) {
+  console.log('increment button counter');
+  req.session.userInfo.clicker++
+  res.redirect('/');
 })
 
 app.listen(3000, function() {
